@@ -1,0 +1,90 @@
+schema_version: "0.1.0"
+record_type: solar_core_state
+record_id: scs-audit-pressure-20260715-001
+created_at: "2026-07-15T10:00:00+09:00"
+
+system:
+  system_id: kazene-multi-wing-network
+  system_name: Kazene Multi-Wing Network
+  environment: simulation
+
+  observation_window:
+    started_at: "2026-07-15T09:00:00+09:00"
+    ended_at: "2026-07-15T10:00:00+09:00"
+
+solar_core_state:
+  mode: balanced
+
+  axes:
+    coordination_strength: 0.58
+    audit_strength: 0.88
+    routing_strength: 0.46
+    resource_control: 0.31
+    emergency_authority: 0.08
+
+  aggregate_breathing_index:
+    value: 0.542
+    method: weighted_mean
+
+    weights:
+      coordination_strength: 0.20
+      audit_strength: 0.30
+      routing_strength: 0.20
+      resource_control: 0.20
+      emergency_authority: 0.10
+
+  distributed_autonomy_floor: 0.55
+
+  centrality_scope:
+    strengthened_functions:
+      - audit
+      - evidence_verification
+
+    preserved_distributed_functions:
+      - hypothesis_generation
+      - domain_analysis
+      - local_route_selection
+
+    restricted_functions:
+      - unverified_external_execution
+
+trigger_context:
+  active_triggers:
+    - risk
+
+  summary: >-
+    Conflicting evidence was detected across two verifier wings.
+    Audit gravity was increased while creative and analytical autonomy
+    remained distributed.
+
+  evidence_refs:
+    - trace://verification-conflict/2026-07-15/001
+    - trace://audit-failure/2026-07-15/003
+
+reversibility:
+  reversible: true
+  no_permanent_emergency_gravity: true
+  expires_at: "2026-07-15T16:00:00+09:00"
+  return_target_record_id: null
+
+  return_conditions:
+    - Three consecutive audit cycles complete without unresolved evidence conflicts.
+    - Human reviewer confirms that routing restrictions can be removed.
+
+  human_review_required: true
+  review_status: pending
+
+trace:
+  parent_record_ids:
+    - balance-field-20260715-004
+
+  related_protocols:
+    - agent-balance-field-protocol
+    - computational-pranayama-protocol
+    - multi-wing-orchestration-generator
+
+  decision_authority: human-gate:solar-balance-reviewer
+
+  notes: >-
+    This record demonstrates function-specific centralization:
+    audit is strengthened without centralizing exploration.
