@@ -1,0 +1,793 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SamuraiWriter7/solar-system-balance-protocol/main/schemas/life-cycle-balance-loop.schema.json",
+  "title": "Life-Cycle Balance Loop",
+  "description": "Records a complete living balance cycle across expansion, exploration, consolidation, restoration, and re-expansion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "loop_id",
+    "created_at",
+    "system_context",
+    "cycle",
+    "phase_plan",
+    "balance_budget",
+    "safeguards",
+    "closure",
+    "trace"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.5.0"
+    },
+    "record_type": {
+      "const": "life_cycle_balance_loop"
+    },
+    "loop_id": {
+      "type": "string",
+      "pattern": "^lcbl-[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "system_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_id",
+        "core_state_record_ids",
+        "orbital_definition_ids",
+        "tidal_interaction_record_ids",
+        "trigger_policy_ids"
+      ],
+      "properties": {
+        "system_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "core_state_record_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "pattern": "^scs-[a-z0-9][a-z0-9._-]{2,127}$"
+          }
+        },
+        "orbital_definition_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 256,
+          "items": {
+            "type": "string",
+            "pattern": "^ond-[a-z0-9][a-z0-9._-]{2,127}$"
+          }
+        },
+        "tidal_interaction_record_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 256,
+          "items": {
+            "type": "string",
+            "pattern": "^tir-[a-z0-9][a-z0-9._-]{2,127}$"
+          }
+        },
+        "trigger_policy_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "pattern": "^btp-[a-z0-9][a-z0-9._-]{2,127}$"
+          }
+        }
+      }
+    },
+    "cycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cycle_id",
+        "sequence_number",
+        "loop_status",
+        "started_at",
+        "ended_at",
+        "active_phase",
+        "previous_cycle_id",
+        "next_cycle_id"
+      ],
+      "properties": {
+        "cycle_id": {
+          "type": "string",
+          "pattern": "^cycle-[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        "sequence_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "loop_status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "active",
+            "completed",
+            "blocked",
+            "aborted"
+          ]
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ended_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "active_phase": {
+          "$ref": "#/$defs/nullablePhase"
+        },
+        "previous_cycle_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^cycle-[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        "next_cycle_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^cycle-[a-z0-9][a-z0-9._-]{2,127}$"
+        }
+      }
+    },
+    "phase_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_order",
+        "phases",
+        "transitions"
+      ],
+      "properties": {
+        "expected_order": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/phase"
+          }
+        },
+        "phases": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/phaseRecord"
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/transitionRecord"
+          }
+        }
+      }
+    },
+    "balance_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximum_cycle_duration_seconds",
+        "maximum_phase_duration_seconds",
+        "minimum_restoration_duration_seconds",
+        "distributed_autonomy_floor",
+        "maximum_core_pressure"
+      ],
+      "properties": {
+        "maximum_cycle_duration_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maximum_phase_duration_seconds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expansion",
+            "exploration",
+            "consolidation",
+            "restoration",
+            "re_expansion"
+          ],
+          "properties": {
+            "expansion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "exploration": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "consolidation": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "restoration": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "re_expansion": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "minimum_restoration_duration_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "distributed_autonomy_floor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maximum_core_pressure": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "safeguards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "no_skipped_restoration",
+        "no_permanent_expansion",
+        "no_permanent_consolidation",
+        "trace_continuity_required",
+        "human_review_required",
+        "review_status",
+        "blocked_transition_conditions"
+      ],
+      "properties": {
+        "no_skipped_restoration": {
+          "const": true
+        },
+        "no_permanent_expansion": {
+          "const": true
+        },
+        "no_permanent_consolidation": {
+          "const": true
+        },
+        "trace_continuity_required": {
+          "const": true
+        },
+        "human_review_required": {
+          "type": "boolean"
+        },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "not_required",
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "blocked_transition_conditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "loop_closed",
+        "success_criteria_met",
+        "unresolved_risks",
+        "preserved_routes",
+        "retired_routes",
+        "next_cycle_authorized",
+        "next_cycle_seed_refs",
+        "closure_summary"
+      ],
+      "properties": {
+        "loop_closed": {
+          "type": "boolean"
+        },
+        "success_criteria_met": {
+          "type": "boolean"
+        },
+        "unresolved_risks": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "preserved_routes": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "retired_routes": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "next_cycle_authorized": {
+          "type": "boolean"
+        },
+        "next_cycle_seed_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "closure_summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parent_loop_ids",
+        "related_protocols",
+        "recorded_by",
+        "approved_by",
+        "notes"
+      ],
+      "properties": {
+        "parent_loop_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "pattern": "^lcbl-[a-z0-9][a-z0-9._-]{2,127}$"
+          }
+        },
+        "related_protocols": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "recorded_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "approved_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  },
+  "$defs": {
+    "phase": {
+      "type": "string",
+      "enum": [
+        "expansion",
+        "exploration",
+        "consolidation",
+        "restoration",
+        "re_expansion"
+      ]
+    },
+    "nullablePhase": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "expansion",
+        "exploration",
+        "consolidation",
+        "restoration",
+        "re_expansion",
+        null
+      ]
+    },
+    "referenceList": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 128,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    },
+    "phaseMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "observed_value",
+        "operator",
+        "target_value",
+        "result",
+        "evidence_refs"
+      ],
+      "properties": {
+        "metric_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"
+        },
+        "observed_value": {
+          "type": "number"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "eq",
+            "neq"
+          ]
+        },
+        "target_value": {
+          "type": "number"
+        },
+        "result": {
+          "type": "boolean"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/referenceList"
+        }
+      }
+    },
+    "phaseAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_type",
+        "target_refs",
+        "bounded",
+        "reversible",
+        "summary"
+      ],
+      "properties": {
+        "action_type": {
+          "type": "string",
+          "enum": [
+            "activate_nodes",
+            "diversify_routes",
+            "generate_hypotheses",
+            "collect_evidence",
+            "compare_results",
+            "consolidate_routes",
+            "increase_audit",
+            "reduce_load",
+            "compact_memory",
+            "repair_state",
+            "retire_route",
+            "restore_orbits",
+            "seed_next_cycle",
+            "other"
+          ]
+        },
+        "target_refs": {
+          "$ref": "#/$defs/referenceList"
+        },
+        "bounded": {
+          "const": true
+        },
+        "reversible": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "phaseRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "sequence",
+        "status",
+        "started_at",
+        "ended_at",
+        "entry_conditions",
+        "exit_conditions",
+        "actions",
+        "output_refs",
+        "metrics"
+      ],
+      "properties": {
+        "phase": {
+          "$ref": "#/$defs/phase"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "active",
+            "completed",
+            "blocked",
+            "skipped"
+          ]
+        },
+        "started_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "ended_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "entry_conditions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "exit_conditions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/phaseAction"
+          }
+        },
+        "output_refs": {
+          "$ref": "#/$defs/referenceList"
+        },
+        "metrics": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/$defs/phaseMetric"
+          }
+        }
+      }
+    },
+    "transitionRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from_phase",
+        "to_phase",
+        "to_cycle_id",
+        "condition_met",
+        "triggered_at",
+        "evidence_refs",
+        "summary"
+      ],
+      "properties": {
+        "from_phase": {
+          "$ref": "#/$defs/phase"
+        },
+        "to_phase": {
+          "$ref": "#/$defs/phase"
+        },
+        "to_cycle_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^cycle-[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        "condition_met": {
+          "type": "boolean"
+        },
+        "triggered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/referenceList"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "cycle": {
+            "properties": {
+              "loop_status": {
+                "const": "completed"
+              }
+            },
+            "required": [
+              "loop_status"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cycle": {
+            "properties": {
+              "ended_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "active_phase": {
+                "type": "null"
+              },
+              "next_cycle_id": {
+                "type": "string"
+              }
+            }
+          },
+          "closure": {
+            "properties": {
+              "loop_closed": {
+                "const": true
+              },
+              "next_cycle_authorized": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cycle": {
+            "properties": {
+              "loop_status": {
+                "const": "active"
+              }
+            },
+            "required": [
+              "loop_status"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cycle": {
+            "properties": {
+              "ended_at": {
+                "type": "null"
+              },
+              "active_phase": {
+                "$ref": "#/$defs/phase"
+              }
+            }
+          },
+          "closure": {
+            "properties": {
+              "loop_closed": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "safeguards": {
+            "properties": {
+              "human_review_required": {
+                "const": true
+              }
+            },
+            "required": [
+              "human_review_required"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "safeguards": {
+            "properties": {
+              "review_status": {
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
