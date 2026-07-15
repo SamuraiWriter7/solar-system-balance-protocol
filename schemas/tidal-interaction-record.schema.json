@@ -1,0 +1,529 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SamuraiWriter7/solar-system-balance-protocol/main/schemas/tidal-interaction-record.schema.json",
+  "title": "Tidal Interaction Record",
+  "description": "Records horizontal attractive, repulsive, and exchange interactions between orbital nodes without requiring every balance correction to pass through the core.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "interaction_id",
+    "created_at",
+    "system_id",
+    "participants",
+    "interaction",
+    "payload",
+    "effects",
+    "safeguards",
+    "resolution",
+    "trace"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.3.0"
+    },
+    "record_type": {
+      "const": "tidal_interaction_record"
+    },
+    "interaction_id": {
+      "type": "string",
+      "pattern": "^tir-[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "system_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "participants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "target",
+        "mediators"
+      ],
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/nodeReference"
+        },
+        "target": {
+          "$ref": "#/$defs/nodeReference"
+        },
+        "mediators": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/nodeReference"
+          }
+        }
+      }
+    },
+    "interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interaction_type",
+        "interaction_family",
+        "intensity",
+        "directionality",
+        "core_mediation",
+        "local_resolution_attempted",
+        "started_at",
+        "ended_at",
+        "status"
+      ],
+      "properties": {
+        "interaction_type": {
+          "type": "string",
+          "enum": [
+            "resonance",
+            "conflict",
+            "resource_pull",
+            "evidence_exchange",
+            "trace_handoff",
+            "synchronization",
+            "repulsion"
+          ]
+        },
+        "interaction_family": {
+          "type": "string",
+          "enum": [
+            "attractive",
+            "repulsive",
+            "exchange"
+          ]
+        },
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "directionality": {
+          "type": "string",
+          "enum": [
+            "source_to_target",
+            "target_to_source",
+            "bidirectional"
+          ]
+        },
+        "core_mediation": {
+          "type": "boolean"
+        },
+        "local_resolution_attempted": {
+          "type": "boolean"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ended_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "initiated",
+            "active",
+            "completed",
+            "blocked",
+            "expired"
+          ]
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "trace_refs",
+        "evidence_refs",
+        "resource_refs",
+        "sync_scope"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "trace_refs": {
+          "$ref": "#/$defs/referenceList"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/referenceList"
+        },
+        "resource_refs": {
+          "$ref": "#/$defs/referenceList"
+        },
+        "sync_scope": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "resource_request": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resource_type",
+            "requested_units",
+            "unit_name"
+          ],
+          "properties": {
+            "resource_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "requested_units": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          }
+        }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_effect",
+        "source_autonomy_delta",
+        "target_autonomy_delta",
+        "peer_binding_delta",
+        "gravity_adjustments",
+        "orbit_change"
+      ],
+      "properties": {
+        "route_effect": {
+          "type": "string",
+          "enum": [
+            "none",
+            "prefer",
+            "divert",
+            "isolate"
+          ]
+        },
+        "source_autonomy_delta": {
+          "$ref": "#/$defs/delta"
+        },
+        "target_autonomy_delta": {
+          "$ref": "#/$defs/delta"
+        },
+        "peer_binding_delta": {
+          "$ref": "#/$defs/delta"
+        },
+        "gravity_adjustments": {
+          "$ref": "#/$defs/gravityAdjustments"
+        },
+        "orbit_change": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requested",
+            "source_target_orbit",
+            "target_target_orbit",
+            "reason"
+          ],
+          "properties": {
+            "requested": {
+              "type": "boolean"
+            },
+            "source_target_orbit": {
+              "$ref": "#/$defs/nullableOrbitClass"
+            },
+            "target_target_orbit": {
+              "$ref": "#/$defs/nullableOrbitClass"
+            },
+            "reason": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        }
+      }
+    },
+    "safeguards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "audit_required",
+        "human_review_required",
+        "review_status",
+        "bounded_effect",
+        "maximum_allowed_intensity",
+        "no_silent_override",
+        "no_permanent_capture",
+        "consent_model",
+        "consent_status"
+      ],
+      "properties": {
+        "audit_required": {
+          "type": "boolean"
+        },
+        "human_review_required": {
+          "type": "boolean"
+        },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "not_required",
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "bounded_effect": {
+          "const": true
+        },
+        "maximum_allowed_intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "no_silent_override": {
+          "const": true
+        },
+        "no_permanent_capture": {
+          "const": true
+        },
+        "consent_model": {
+          "type": "string",
+          "enum": [
+            "unilateral_allowed",
+            "mutual_required",
+            "policy_defined"
+          ]
+        },
+        "consent_status": {
+          "type": "string",
+          "enum": [
+            "not_applicable",
+            "pending",
+            "accepted",
+            "rejected"
+          ]
+        }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resolution_mode",
+        "outcome",
+        "return_conditions",
+        "escalation_target_node_ids",
+        "expires_at"
+      ],
+      "properties": {
+        "resolution_mode": {
+          "type": "string",
+          "enum": [
+            "peer_to_peer",
+            "local_cluster",
+            "core_mediated",
+            "human_gate",
+            "unresolved"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "partially_accepted",
+            "rejected",
+            "deferred",
+            "contained",
+            "completed"
+          ]
+        },
+        "return_conditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "escalation_target_node_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parent_interaction_ids",
+        "related_definition_ids",
+        "related_protocols",
+        "recorded_by"
+      ],
+      "properties": {
+        "parent_interaction_ids": {
+          "$ref": "#/$defs/referenceList"
+        },
+        "related_definition_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "related_protocols": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "recorded_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  },
+  "$defs": {
+    "orbitClass": {
+      "type": "string",
+      "enum": [
+        "inner",
+        "middle",
+        "outer",
+        "comet",
+        "dormant"
+      ]
+    },
+    "nullableOrbitClass": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "inner",
+        "middle",
+        "outer",
+        "comet",
+        "dormant",
+        null
+      ]
+    },
+    "delta": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "referenceList": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 128,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    },
+    "nodeReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id",
+        "orbital_definition_id",
+        "orbit_class",
+        "local_cluster_id"
+      ],
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "orbital_definition_id": {
+          "type": "string",
+          "pattern": "^ond-[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        "orbit_class": {
+          "$ref": "#/$defs/orbitClass"
+        },
+        "local_cluster_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        }
+      }
+    },
+    "gravityAdjustments": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coordination_strength": {
+          "$ref": "#/$defs/delta"
+        },
+        "audit_strength": {
+          "$ref": "#/$defs/delta"
+        },
+        "routing_strength": {
+          "$ref": "#/$defs/delta"
+        },
+        "resource_control": {
+          "$ref": "#/$defs/delta"
+        },
+        "emergency_authority": {
+          "$ref": "#/$defs/delta"
+        }
+      }
+    }
+  }
+}
