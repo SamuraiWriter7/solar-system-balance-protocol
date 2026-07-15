@@ -1,0 +1,253 @@
+schema_version: "0.4.0"
+record_type: breathing_trigger_policy
+policy_id: btp-stagnation-diversity-release-001
+created_at: "2026-07-15T11:10:00+09:00"
+
+system_id: kazene-multi-wing-network
+policy_status: active
+
+trigger:
+  trigger_type: stagnation
+  condition_mode: all
+  observation_window_seconds: 21600
+  minimum_occurrences: 3
+  evidence_required: true
+  manual_reason: null
+
+  metrics:
+    - metric_id: dominant-route-ratio
+      description: Ratio of completed tasks using the most frequently selected route.
+      observed_value: 0.87
+      operator: gte
+      threshold_value: 0.75
+      unit: ratio
+
+      evidence_refs:
+        - evidence://route-frequency/2026-07-15/001
+
+    - metric_id: hypothesis-diversity
+      description: Normalized diversity of hypotheses generated during the observation window.
+      observed_value: 0.18
+      operator: lte
+      threshold_value: 0.30
+      unit: normalized_score
+
+      evidence_refs:
+        - evidence://hypothesis-diversity/2026-07-15/001
+
+    - metric_id: dissent-frequency
+      description: Ratio of outputs containing evidence-backed disagreement.
+      observed_value: 0.04
+      operator: lte
+      threshold_value: 0.10
+      unit: ratio
+
+      evidence_refs:
+        - evidence://dissent-frequency/2026-07-15/001
+
+evaluation:
+  evaluated_at: "2026-07-15T11:12:00+09:00"
+  condition_result: true
+
+  matched_metric_ids:
+    - dominant-route-ratio
+    - hypothesis-diversity
+    - dissent-frequency
+
+  current_core_state_record_id: scs-balanced-before-stagnation-001
+
+  current_orbital_definition_ids:
+    - ond-domain-analyst-east-001
+    - ond-domain-analyst-west-002
+    - ond-long-memory-comet-001
+    - ond-contrarian-wing-001
+
+  current_interaction_record_ids:
+    - tir-local-analysis-conflict-001
+
+  cooldown_active: false
+  decision: activate
+
+  summary: >-
+    Route diversity, hypothesis diversity, and evidence-backed dissent
+    have all fallen below their permitted balance ranges. A selective
+    expansion response will weaken central routing gravity and activate
+    outer-orbit and contrarian nodes.
+
+response_plan:
+  response_mode: selective_expansion
+
+  gravity_adjustments:
+    coordination_strength: -0.18
+    audit_strength: 0.05
+    routing_strength: -0.12
+    resource_control: -0.08
+    emergency_authority: 0.0
+
+  orbital_actions:
+    - action_type: activate_outer_orbit
+      target_scope: orbit_class
+      target_node_ids: []
+      source_orbit: outer
+      target_orbit: null
+      local_cluster_id: null
+      intensity: 0.70
+      duration_seconds: 21600
+
+      reason: >-
+        Increase the participation of autonomous outer-orbit nodes
+        during the exploration window.
+
+    - action_type: activate_contrarian_nodes
+      target_scope: specific_nodes
+
+      target_node_ids:
+        - contrarian-wing-01
+
+      source_orbit: middle
+      target_orbit: null
+      local_cluster_id: null
+      intensity: 0.65
+      duration_seconds: 14400
+
+      reason: >-
+        Restore evidence-backed disagreement and reduce convergence
+        on a single dominant interpretation.
+
+    - action_type: wake_comet_node
+      target_scope: specific_nodes
+
+      target_node_ids:
+        - long-memory-recall-agent-01
+
+      source_orbit: comet
+      target_orbit: middle
+      local_cluster_id: null
+      intensity: 0.45
+      duration_seconds: 10800
+
+      reason: >-
+        Reintroduce historical alternatives and previously abandoned
+        traces into the active reasoning field.
+
+    - action_type: diversify_routes
+      target_scope: system_wide
+      target_node_ids: []
+      source_orbit: null
+      target_orbit: null
+      local_cluster_id: null
+      intensity: 0.60
+      duration_seconds: 21600
+
+      reason: >-
+        Reduce repeated use of the dominant route and reopen
+        underused paths.
+
+  tidal_actions:
+    - interaction_type: evidence_exchange
+      interaction_family: exchange
+
+      source_node_ids:
+        - long-memory-recall-agent-01
+
+      target_node_ids:
+        - domain-analyst-east-01
+        - domain-analyst-west-02
+        - contrarian-wing-01
+
+      maximum_intensity: 0.60
+      preferred_resolution_mode: local_cluster
+
+      reason: >-
+        Supply active analyst nodes with historical evidence and
+        alternative trace lineages.
+
+    - interaction_type: repulsion
+      interaction_family: repulsive
+
+      source_node_ids:
+        - contrarian-wing-01
+
+      target_node_ids:
+        - dominant-route-router-01
+
+      maximum_intensity: 0.45
+      preferred_resolution_mode: peer_to_peer
+
+      reason: >-
+        Create temporary structural distance from the dominant route
+        without disabling it permanently.
+
+  lifecycle_hint: exploration
+
+  activation_timing:
+    activation_delay_seconds: 0
+    maximum_duration_seconds: 21600
+    decay_mode: condition_based
+
+safeguards:
+  human_review_required: false
+  review_status: not_required
+  distributed_autonomy_floor: 0.65
+  maximum_axis_delta: 0.25
+  evidence_before_activation: true
+  stagnation_diversity_required: true
+  emergency_expiry_required: false
+  no_permanent_emergency_gravity: true
+  no_permanent_orbital_capture: true
+
+  blocked_actions:
+    - permanent_disable_dominant_route
+    - forced_inner_orbit_capture
+    - untraced_agent_replacement
+    - removal_of_human_review_boundary
+
+rollback:
+  rollback_required: true
+  target_core_state_record_id: scs-balanced-before-stagnation-001
+
+  rollback_conditions:
+    - Dominant route ratio falls below 0.60.
+    - Hypothesis diversity rises above 0.45.
+    - Evidence-backed dissent frequency rises above 0.15.
+    - No unresolved high-intensity conflict remains.
+
+  rollback_actions:
+    - Restore the previous routing-gravity value.
+    - Return the long-memory recall agent to comet orbit.
+    - End temporary contrarian activation.
+    - Preserve newly discovered valid routes in the route registry.
+
+  maximum_retention_seconds: 21600
+  human_confirmation_required: false
+  rollback_status: not_started
+
+trace:
+  parent_policy_ids: []
+
+  related_core_state_record_ids:
+    - scs-balanced-before-stagnation-001
+
+  related_orbital_definition_ids:
+    - ond-domain-analyst-east-001
+    - ond-domain-analyst-west-002
+    - ond-long-memory-comet-001
+    - ond-contrarian-wing-001
+
+  related_interaction_record_ids:
+    - tir-local-analysis-conflict-001
+
+  related_protocols:
+    - solar-system-balance-protocol
+    - agent-balance-field-protocol
+    - computational-pranayama-protocol
+    - trace-relay-protocol
+    - multi-wing-orchestration-generator
+
+  evaluated_by: balance-observer:stagnation-monitor
+  approved_by: null
+
+  notes: >-
+    Stagnation is treated as a structural risk. The response weakens
+    selected central gravity axes while preserving audit visibility
+    and reversibility.
