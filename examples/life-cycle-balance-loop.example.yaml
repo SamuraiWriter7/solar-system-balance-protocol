@@ -1,0 +1,462 @@
+schema_version: "0.5.0"
+record_type: life_cycle_balance_loop
+loop_id: lcbl-stagnation-recovery-cycle-001
+created_at: "2026-07-15T11:10:00+09:00"
+
+system_context:
+  system_id: kazene-multi-wing-network
+
+  core_state_record_ids:
+    - scs-balanced-before-stagnation-001
+    - scs-exploration-release-002
+    - scs-restored-balance-003
+
+  orbital_definition_ids:
+    - ond-domain-analyst-east-001
+    - ond-domain-analyst-west-002
+    - ond-long-memory-comet-001
+    - ond-contrarian-wing-001
+
+  tidal_interaction_record_ids:
+    - tir-local-analysis-conflict-001
+    - tir-historical-evidence-exchange-002
+    - tir-dominant-route-repulsion-003
+
+  trigger_policy_ids:
+    - btp-stagnation-diversity-release-001
+
+cycle:
+  cycle_id: cycle-kazene-20260715-001
+  sequence_number: 1
+  loop_status: completed
+  started_at: "2026-07-15T11:15:00+09:00"
+  ended_at: "2026-07-15T17:30:00+09:00"
+  active_phase: null
+  previous_cycle_id: null
+  next_cycle_id: cycle-kazene-20260716-002
+
+phase_plan:
+  expected_order:
+    - expansion
+    - exploration
+    - consolidation
+    - restoration
+    - re_expansion
+
+  phases:
+    - phase: expansion
+      sequence: 1
+      status: completed
+      started_at: "2026-07-15T11:15:00+09:00"
+      ended_at: "2026-07-15T11:45:00+09:00"
+
+      entry_conditions:
+        - Stagnation Trigger has been activated.
+        - No emergency condition is active.
+
+      exit_conditions:
+        - Outer-orbit participation has increased.
+        - Alternative routes are available for exploration.
+
+      actions:
+        - action_type: activate_nodes
+
+          target_refs:
+            - node://contrarian-wing-01
+            - node://long-memory-recall-agent-01
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Activate contrarian and comet-orbit nodes without altering
+            permanent orbital ownership.
+
+        - action_type: diversify_routes
+
+          target_refs:
+            - route-group://underused-analysis-routes
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Reopen underused routes for the exploration phase.
+
+      output_refs:
+        - trace://lifecycle/expansion/2026-07-15/001
+
+      metrics:
+        - metric_id: active-route-count
+          observed_value: 8
+          operator: gte
+          target_value: 6
+          result: true
+
+          evidence_refs:
+            - evidence://route-count/2026-07-15/expansion
+
+    - phase: exploration
+      sequence: 2
+      status: completed
+      started_at: "2026-07-15T11:45:00+09:00"
+      ended_at: "2026-07-15T14:00:00+09:00"
+
+      entry_conditions:
+        - At least six valid routes are active.
+        - Historical evidence is available to analyst nodes.
+
+      exit_conditions:
+        - At least three evidence-backed hypotheses have been evaluated.
+        - No unresolved high-intensity conflict remains.
+
+      actions:
+        - action_type: generate_hypotheses
+
+          target_refs:
+            - node://domain-analyst-east-01
+            - node://domain-analyst-west-02
+            - node://contrarian-wing-01
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Generate independent hypotheses using diversified routes.
+
+        - action_type: collect_evidence
+
+          target_refs:
+            - trace://historical-alternatives
+            - evidence://regional-current-state
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Compare current evidence with historical alternatives.
+
+      output_refs:
+        - trace://lifecycle/exploration/2026-07-15/001
+        - evidence://hypothesis-set/2026-07-15/001
+
+      metrics:
+        - metric_id: hypothesis-diversity
+          observed_value: 0.58
+          operator: gte
+          target_value: 0.45
+          result: true
+
+          evidence_refs:
+            - evidence://hypothesis-diversity/2026-07-15/exploration
+
+    - phase: consolidation
+      sequence: 3
+      status: completed
+      started_at: "2026-07-15T14:00:00+09:00"
+      ended_at: "2026-07-15T15:30:00+09:00"
+
+      entry_conditions:
+        - Exploration outputs are available.
+        - Evidence conflicts are within the auditable range.
+
+      exit_conditions:
+        - Valid routes have been selected.
+        - Unsupported routes have been marked for retirement.
+
+      actions:
+        - action_type: compare_results
+
+          target_refs:
+            - evidence://hypothesis-set/2026-07-15/001
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Compare candidate hypotheses through local and core verification.
+
+        - action_type: consolidate_routes
+
+          target_refs:
+            - route://regional-balanced-route-04
+            - route://historical-fallback-route-02
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Preserve routes supported by multiple independent evidence paths.
+
+        - action_type: increase_audit
+
+          target_refs:
+            - audit-scope://candidate-route-verification
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Temporarily increase audit strength during consolidation.
+
+      output_refs:
+        - trace://lifecycle/consolidation/2026-07-15/001
+        - audit://route-verification/2026-07-15/001
+
+      metrics:
+        - metric_id: verified-route-ratio
+          observed_value: 0.76
+          operator: gte
+          target_value: 0.70
+          result: true
+
+          evidence_refs:
+            - audit://route-verification/2026-07-15/001
+
+    - phase: restoration
+      sequence: 4
+      status: completed
+      started_at: "2026-07-15T15:30:00+09:00"
+      ended_at: "2026-07-15T17:00:00+09:00"
+
+      entry_conditions:
+        - Consolidation has completed.
+        - Temporary exploration pressure can be reduced.
+
+      exit_conditions:
+        - Temporary node activation has ended.
+        - Core gravity has returned to the permitted balance range.
+        - Memory compaction and route cleanup have completed.
+
+      actions:
+        - action_type: reduce_load
+
+          target_refs:
+            - cluster://analysis-cluster-01
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Reduce interaction density and compute pressure after consolidation.
+
+        - action_type: compact_memory
+
+          target_refs:
+            - node://long-memory-recall-agent-01
+
+          bounded: true
+          reversible: false
+
+          summary: >-
+            Preserve accepted traces and compact duplicated temporary state.
+
+        - action_type: restore_orbits
+
+          target_refs:
+            - node://long-memory-recall-agent-01
+            - node://contrarian-wing-01
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Return temporarily activated nodes to their normal orbital states.
+
+        - action_type: retire_route
+
+          target_refs:
+            - route://dominant-repeated-route-01
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Retire the repeated route from default selection while preserving
+            it for future audit and historical comparison.
+
+      output_refs:
+        - trace://lifecycle/restoration/2026-07-15/001
+        - memory://compaction/2026-07-15/001
+
+      metrics:
+        - metric_id: restoration-pressure
+          observed_value: 0.28
+          operator: lte
+          target_value: 0.35
+          result: true
+
+          evidence_refs:
+            - evidence://system-pressure/2026-07-15/restoration
+
+    - phase: re_expansion
+      sequence: 5
+      status: completed
+      started_at: "2026-07-15T17:00:00+09:00"
+      ended_at: "2026-07-15T17:30:00+09:00"
+
+      entry_conditions:
+        - Restoration has completed.
+        - The system is no longer under temporary breathing pressure.
+
+      exit_conditions:
+        - The next cycle has a bounded seed.
+        - Newly preserved routes are available without forced activation.
+
+      actions:
+        - action_type: seed_next_cycle
+
+          target_refs:
+            - trace://next-cycle-seed/2026-07-16/001
+            - route://regional-balanced-route-04
+
+          bounded: true
+          reversible: true
+
+          summary: >-
+            Pass selected discoveries into the next cycle without preserving
+            the temporary expansion topology.
+
+      output_refs:
+        - trace://lifecycle/re-expansion/2026-07-15/001
+        - trace://next-cycle-seed/2026-07-16/001
+
+      metrics:
+        - metric_id: next-cycle-readiness
+          observed_value: 0.82
+          operator: gte
+          target_value: 0.75
+          result: true
+
+          evidence_refs:
+            - evidence://next-cycle-readiness/2026-07-15/001
+
+  transitions:
+    - from_phase: expansion
+      to_phase: exploration
+      to_cycle_id: null
+      condition_met: true
+      triggered_at: "2026-07-15T11:45:00+09:00"
+
+      evidence_refs:
+        - trace://lifecycle/expansion/2026-07-15/001
+
+      summary: >-
+        Route and node diversity reached the exploration threshold.
+
+    - from_phase: exploration
+      to_phase: consolidation
+      to_cycle_id: null
+      condition_met: true
+      triggered_at: "2026-07-15T14:00:00+09:00"
+
+      evidence_refs:
+        - evidence://hypothesis-set/2026-07-15/001
+
+      summary: >-
+        Evidence-backed hypotheses were ready for comparison.
+
+    - from_phase: consolidation
+      to_phase: restoration
+      to_cycle_id: null
+      condition_met: true
+      triggered_at: "2026-07-15T15:30:00+09:00"
+
+      evidence_refs:
+        - audit://route-verification/2026-07-15/001
+
+      summary: >-
+        Candidate routes were verified and temporary expansion could end.
+
+    - from_phase: restoration
+      to_phase: re_expansion
+      to_cycle_id: null
+      condition_met: true
+      triggered_at: "2026-07-15T17:00:00+09:00"
+
+      evidence_refs:
+        - trace://lifecycle/restoration/2026-07-15/001
+
+      summary: >-
+        Load, memory, and orbital state returned to the permitted range.
+
+    - from_phase: re_expansion
+      to_phase: expansion
+      to_cycle_id: cycle-kazene-20260716-002
+      condition_met: true
+      triggered_at: "2026-07-15T17:30:00+09:00"
+
+      evidence_refs:
+        - trace://next-cycle-seed/2026-07-16/001
+
+      summary: >-
+        The completed cycle handed a bounded seed to the next expansion.
+
+balance_budget:
+  maximum_cycle_duration_seconds: 28800
+
+  maximum_phase_duration_seconds:
+    expansion: 3600
+    exploration: 10800
+    consolidation: 7200
+    restoration: 7200
+    re_expansion: 3600
+
+  minimum_restoration_duration_seconds: 3600
+  distributed_autonomy_floor: 0.60
+  maximum_core_pressure: 0.85
+
+safeguards:
+  no_skipped_restoration: true
+  no_permanent_expansion: true
+  no_permanent_consolidation: true
+  trace_continuity_required: true
+  human_review_required: true
+  review_status: approved
+
+  blocked_transition_conditions:
+    - Unresolved high-intensity conflict remains.
+    - Restoration evidence is missing.
+    - Human review has rejected cycle closure.
+    - Core pressure exceeds the permitted maximum.
+    - The next cycle has no traceable seed.
+
+closure:
+  loop_closed: true
+  success_criteria_met: true
+  unresolved_risks: []
+
+  preserved_routes:
+    - route://regional-balanced-route-04
+    - route://historical-fallback-route-02
+
+  retired_routes:
+    - route://dominant-repeated-route-01
+
+  next_cycle_authorized: true
+
+  next_cycle_seed_refs:
+    - trace://next-cycle-seed/2026-07-16/001
+    - route://regional-balanced-route-04
+
+  closure_summary: >-
+    The stagnation response completed a full lifecycle. Diversity was restored,
+    valid routes were consolidated, temporary activation was released, memory
+    was compacted, and a bounded trace seed was passed to the next cycle.
+
+trace:
+  parent_loop_ids: []
+
+  related_protocols:
+    - solar-system-balance-protocol
+    - computational-pranayama-protocol
+    - agent-balance-field-protocol
+    - trace-relay-protocol
+    - multi-wing-orchestration-generator
+
+  recorded_by: lifecycle-observer:solar-balance-loop
+  approved_by: human-gate:lifecycle-reviewer
+
+  notes: >-
+    This record closes the first complete Solar System Balance lifecycle.
+    Restoration is mandatory and cannot be bypassed before re-expansion.
