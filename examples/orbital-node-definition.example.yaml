@@ -1,0 +1,126 @@
+schema_version: "0.2.0"
+record_type: orbital_node_definition
+definition_id: ond-long-memory-comet-001
+created_at: "2026-07-15T10:20:00+09:00"
+
+system_id: kazene-multi-wing-network
+
+node:
+  node_id: long-memory-recall-agent-01
+  display_name: Long Memory Recall Agent
+  node_type: memory_node
+  operational_state: standby
+
+  capabilities:
+    - long_term_trace_recall
+    - lineage_reconstruction
+    - historical_evidence_comparison
+
+  owner_boundary: memory-wing
+
+orbit:
+  orbit_class: comet
+  distance_from_core: 0.86
+  binding_strength: 0.38
+  autonomy_level: 0.82
+
+  interaction_frequency:
+    mode: event_driven
+    nominal_interval_seconds: 0
+    core_sync_required: false
+
+  orbital_phase: distant
+
+core_relationship:
+  bound_functions:
+    - trace_reconstruction
+    - systemic_audit_support
+
+  locally_governed_functions:
+    - local_index_maintenance
+    - memory_compaction
+    - dormant_state_management
+
+  prohibited_core_overrides:
+    - silent_memory_rewrite
+    - untraced_history_deletion
+    - permanent_inner_orbit_binding
+
+  audit_visibility: full
+  routing_authority: event_dependent
+
+interaction_profile:
+  peer_interaction_strength: 0.44
+  local_cluster_id: memory-cluster-outer-01
+
+  allowed_tidal_interactions:
+    - evidence_exchange
+    - trace_handoff
+    - synchronization
+    - repulsion
+
+  preferred_handoff_targets:
+    - trace-core
+    - verifier-wing
+    - human-gate
+
+resource_profile:
+  core_resource_dependency: 0.25
+  local_resource_capacity: 0.75
+
+  fallback_sources:
+    - cold-storage-replica-01
+    - regional-memory-node-03
+
+transition_policy:
+  transition_allowed: true
+
+  allowed_target_orbits:
+    - middle
+    - inner
+
+  approach_triggers:
+    - risk
+    - audit_request
+    - manual
+
+  departure_triggers:
+    - audit_complete
+    - mission_complete
+    - timeout
+
+  return_conditions:
+    - Requested trace lineage has been reconstructed.
+    - Evidence has been handed off to the verifier wing.
+    - Human review confirms that continued inner-orbit access is unnecessary.
+
+  human_review_required: true
+  max_inner_orbit_duration_seconds: 14400
+  cooldown_seconds: 86400
+
+comet_profile:
+  activation_triggers:
+    - long_term_trace_gap
+    - systemic_audit_request
+    - disaster_recovery
+    - historical_conflict_detection
+
+  active_window_seconds: 10800
+  departure_mode: policy_based
+
+trace:
+  parent_definition_ids:
+    - ond-memory-cluster-base-001
+
+  related_protocols:
+    - solar-system-balance-protocol
+    - trace-relay-protocol
+    - computational-pranayama-protocol
+    - multi-wing-orchestration-generator
+
+  defined_by: human-gate:orbital-architecture-reviewer
+
+  notes: >-
+    This node remains distant during ordinary operations and approaches
+    the core only when long-term memory or historical evidence is required.
+    It must return to a distant state after completing its mission.
