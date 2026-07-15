@@ -1,0 +1,894 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SamuraiWriter7/solar-system-balance-protocol/main/schemas/orbital-node-definition.schema.json",
+  "title": "Orbital Node Definition",
+  "description": "Defines the orbital role, structural distance, autonomy, core binding, interaction frequency, resource dependency, and transition policy of a node in a distributed multi-agent system.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "definition_id",
+    "created_at",
+    "system_id",
+    "node",
+    "orbit",
+    "core_relationship",
+    "interaction_profile",
+    "resource_profile",
+    "transition_policy",
+    "trace"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "record_type": {
+      "const": "orbital_node_definition"
+    },
+    "definition_id": {
+      "type": "string",
+      "pattern": "^ond-[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "system_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id",
+        "node_type",
+        "operational_state"
+      ],
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "node_type": {
+          "type": "string",
+          "enum": [
+            "agent",
+            "wing",
+            "service",
+            "cluster",
+            "replica",
+            "memory_node",
+            "human_gate",
+            "other"
+          ]
+        },
+        "operational_state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "standby",
+            "dormant",
+            "degraded",
+            "isolated"
+          ]
+        },
+        "capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "owner_boundary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "orbit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "orbit_class",
+        "distance_from_core",
+        "binding_strength",
+        "autonomy_level",
+        "interaction_frequency",
+        "orbital_phase"
+      ],
+      "properties": {
+        "orbit_class": {
+          "type": "string",
+          "enum": [
+            "inner",
+            "middle",
+            "outer",
+            "comet",
+            "dormant"
+          ]
+        },
+        "distance_from_core": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Structural distance from the core. Zero is closest to the core and one is the most distant."
+        },
+        "binding_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Strength of governance, synchronization, audit, or routing binding to the core."
+        },
+        "autonomy_level": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Degree to which the node may make local decisions without core approval."
+        },
+        "interaction_frequency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "nominal_interval_seconds",
+            "core_sync_required"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "high",
+                "periodic",
+                "low",
+                "event_driven",
+                "none"
+              ]
+            },
+            "nominal_interval_seconds": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "core_sync_required": {
+              "type": "boolean"
+            }
+          }
+        },
+        "orbital_phase": {
+          "type": "string",
+          "enum": [
+            "stable",
+            "approaching",
+            "periapsis",
+            "departing",
+            "distant",
+            "hibernating"
+          ]
+        }
+      }
+    },
+    "core_relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bound_functions",
+        "locally_governed_functions",
+        "prohibited_core_overrides",
+        "audit_visibility",
+        "routing_authority"
+      ],
+      "properties": {
+        "bound_functions": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "locally_governed_functions": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "prohibited_core_overrides": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "audit_visibility": {
+          "type": "string",
+          "enum": [
+            "full",
+            "selective",
+            "on_request",
+            "minimal"
+          ]
+        },
+        "routing_authority": {
+          "type": "string",
+          "enum": [
+            "core",
+            "shared",
+            "local",
+            "event_dependent"
+          ]
+        }
+      }
+    },
+    "interaction_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "peer_interaction_strength",
+        "local_cluster_id",
+        "allowed_tidal_interactions",
+        "preferred_handoff_targets"
+      ],
+      "properties": {
+        "peer_interaction_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "local_cluster_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "allowed_tidal_interactions": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "enum": [
+              "resonance",
+              "conflict",
+              "resource_pull",
+              "evidence_exchange",
+              "trace_handoff",
+              "synchronization",
+              "repulsion"
+            ]
+          }
+        },
+        "preferred_handoff_targets": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "resource_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "core_resource_dependency",
+        "local_resource_capacity",
+        "fallback_sources"
+      ],
+      "properties": {
+        "core_resource_dependency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "local_resource_capacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "fallback_sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      }
+    },
+    "transition_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition_allowed",
+        "allowed_target_orbits",
+        "approach_triggers",
+        "departure_triggers",
+        "return_conditions",
+        "human_review_required",
+        "max_inner_orbit_duration_seconds",
+        "cooldown_seconds"
+      ],
+      "properties": {
+        "transition_allowed": {
+          "type": "boolean"
+        },
+        "allowed_target_orbits": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "inner",
+              "middle",
+              "outer",
+              "comet",
+              "dormant"
+            ]
+          }
+        },
+        "approach_triggers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "risk",
+              "crisis",
+              "load",
+              "audit_request",
+              "resource_shortage",
+              "manual",
+              "seasonal",
+              "other"
+            ]
+          }
+        },
+        "departure_triggers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "stability_restored",
+              "load_reduced",
+              "audit_complete",
+              "mission_complete",
+              "timeout",
+              "manual",
+              "other"
+            ]
+          }
+        },
+        "return_conditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "human_review_required": {
+          "type": "boolean"
+        },
+        "max_inner_orbit_duration_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "cooldown_seconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "comet_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_triggers",
+        "active_window_seconds",
+        "departure_mode"
+      ],
+      "properties": {
+        "activation_triggers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "active_window_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "departure_mode": {
+          "type": "string",
+          "enum": [
+            "automatic",
+            "human_review",
+            "policy_based"
+          ]
+        }
+      }
+    },
+    "dormant_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retention_role",
+        "wake_triggers"
+      ],
+      "properties": {
+        "retention_role": {
+          "type": "string",
+          "enum": [
+            "backup",
+            "long_term_memory",
+            "disaster_recovery",
+            "seasonal",
+            "reserve_capacity",
+            "other"
+          ]
+        },
+        "wake_triggers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parent_definition_ids",
+        "related_protocols",
+        "defined_by"
+      ],
+      "properties": {
+        "parent_definition_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "related_protocols": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "defined_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "orbit_class": {
+                "const": "inner"
+              }
+            },
+            "required": [
+              "orbit_class"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "distance_from_core": {
+                "maximum": 0.35
+              },
+              "binding_strength": {
+                "minimum": 0.6
+              },
+              "orbital_phase": {
+                "enum": [
+                  "stable",
+                  "periapsis"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "orbit_class": {
+                "const": "middle"
+              }
+            },
+            "required": [
+              "orbit_class"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "distance_from_core": {
+                "minimum": 0.25,
+                "maximum": 0.75
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "orbit_class": {
+                "const": "outer"
+              }
+            },
+            "required": [
+              "orbit_class"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "distance_from_core": {
+                "minimum": 0.55
+              },
+              "autonomy_level": {
+                "minimum": 0.6
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "orbit_class": {
+                "const": "comet"
+              }
+            },
+            "required": [
+              "orbit_class"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "comet_profile"
+        ],
+        "properties": {
+          "orbit": {
+            "properties": {
+              "interaction_frequency": {
+                "properties": {
+                  "mode": {
+                    "const": "event_driven"
+                  },
+                  "nominal_interval_seconds": {
+                    "const": 0
+                  }
+                }
+              },
+              "orbital_phase": {
+                "enum": [
+                  "approaching",
+                  "periapsis",
+                  "departing",
+                  "distant"
+                ]
+              }
+            }
+          },
+          "node": {
+            "properties": {
+              "operational_state": {
+                "enum": [
+                  "active",
+                  "standby",
+                  "dormant"
+                ]
+              }
+            }
+          },
+          "transition_policy": {
+            "properties": {
+              "allowed_target_orbits": {
+                "contains": {
+                  "enum": [
+                    "inner",
+                    "middle"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "orbit_class": {
+                "const": "dormant"
+              }
+            },
+            "required": [
+              "orbit_class"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "dormant_profile"
+        ],
+        "properties": {
+          "node": {
+            "properties": {
+              "operational_state": {
+                "enum": [
+                  "standby",
+                  "dormant"
+                ]
+              }
+            }
+          },
+          "orbit": {
+            "properties": {
+              "interaction_frequency": {
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "event_driven",
+                      "none"
+                    ]
+                  },
+                  "nominal_interval_seconds": {
+                    "const": 0
+                  }
+                }
+              },
+              "orbital_phase": {
+                "const": "hibernating"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "transition_policy": {
+            "properties": {
+              "transition_allowed": {
+                "const": true
+              }
+            },
+            "required": [
+              "transition_allowed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "transition_policy": {
+            "properties": {
+              "allowed_target_orbits": {
+                "minItems": 1
+              },
+              "approach_triggers": {
+                "minItems": 1
+              },
+              "departure_triggers": {
+                "minItems": 1
+              },
+              "return_conditions": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "transition_policy": {
+            "properties": {
+              "transition_allowed": {
+                "const": false
+              }
+            },
+            "required": [
+              "transition_allowed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "transition_policy": {
+            "properties": {
+              "allowed_target_orbits": {
+                "maxItems": 0
+              },
+              "approach_triggers": {
+                "maxItems": 0
+              },
+              "departure_triggers": {
+                "maxItems": 0
+              },
+              "return_conditions": {
+                "maxItems": 0
+              },
+              "max_inner_orbit_duration_seconds": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "interaction_frequency": {
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "continuous",
+                      "event_driven",
+                      "none"
+                    ]
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "interaction_frequency": {
+                "properties": {
+                  "nominal_interval_seconds": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "interaction_frequency": {
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "high",
+                      "periodic",
+                      "low"
+                    ]
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "orbit": {
+            "properties": {
+              "interaction_frequency": {
+                "properties": {
+                  "nominal_interval_seconds": {
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
