@@ -1,0 +1,114 @@
+schema_version: "0.3.0"
+record_type: tidal_interaction_record
+interaction_id: tir-local-analysis-conflict-001
+created_at: "2026-07-15T10:45:00+09:00"
+
+system_id: kazene-multi-wing-network
+
+participants:
+  source:
+    node_id: domain-analyst-east-01
+    orbital_definition_id: ond-domain-analyst-east-001
+    orbit_class: outer
+    local_cluster_id: analysis-cluster-01
+
+  target:
+    node_id: domain-analyst-west-02
+    orbital_definition_id: ond-domain-analyst-west-002
+    orbit_class: outer
+    local_cluster_id: analysis-cluster-01
+
+  mediators:
+    - node_id: local-verifier-01
+      orbital_definition_id: ond-local-verifier-001
+      orbit_class: middle
+      local_cluster_id: analysis-cluster-01
+
+interaction:
+  interaction_type: conflict
+  interaction_family: repulsive
+  intensity: 0.72
+  directionality: bidirectional
+  core_mediation: false
+  local_resolution_attempted: true
+  started_at: "2026-07-15T10:30:00+09:00"
+  ended_at: "2026-07-15T10:42:00+09:00"
+  status: completed
+
+payload:
+  summary: >-
+    Two outer-orbit analyst nodes produced incompatible route recommendations.
+    The local verifier compared their evidence and diverted the disputed route
+    without requesting a core-wide decision.
+
+  trace_refs:
+    - trace://analysis-route/east/2026-07-15/014
+    - trace://analysis-route/west/2026-07-15/021
+
+  evidence_refs:
+    - evidence://regional-load/east/2026-07-15
+    - evidence://regional-risk/west/2026-07-15
+
+  resource_refs: []
+  sync_scope: null
+
+effects:
+  route_effect: divert
+  source_autonomy_delta: 0.0
+  target_autonomy_delta: 0.0
+  peer_binding_delta: -0.12
+
+  gravity_adjustments:
+    audit_strength: 0.08
+    routing_strength: 0.05
+
+  orbit_change:
+    requested: false
+    source_target_orbit: null
+    target_target_orbit: null
+    reason: null
+
+safeguards:
+  audit_required: true
+  human_review_required: false
+  review_status: not_required
+  bounded_effect: true
+  maximum_allowed_intensity: 0.80
+  no_silent_override: true
+  no_permanent_capture: true
+  consent_model: policy_defined
+  consent_status: accepted
+
+resolution:
+  resolution_mode: local_cluster
+  outcome: contained
+
+  return_conditions:
+    - Both analyst nodes receive the verifier comparison trace.
+    - The diverted route is reevaluated after the next evidence refresh.
+
+  escalation_target_node_ids:
+    - core-verifier-01
+
+  expires_at: "2026-07-15T16:00:00+09:00"
+
+trace:
+  parent_interaction_ids: []
+
+  related_definition_ids:
+    - ond-domain-analyst-east-001
+    - ond-domain-analyst-west-002
+    - ond-local-verifier-001
+
+  related_protocols:
+    - solar-system-balance-protocol
+    - agent-balance-field-protocol
+    - trace-relay-protocol
+    - multi-wing-orchestration-generator
+
+  recorded_by: local-cluster:analysis-cluster-01
+
+  notes: >-
+    Repulsion is treated as a normal balancing force. The conflict was
+    contained locally, preserved both analysts' autonomy, and avoided
+    unnecessary central escalation.
